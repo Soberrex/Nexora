@@ -41,3 +41,7 @@ logs/
 # Playwright
 playwright-report/
 test-results/
+
+# Firebase emulator
+.emulator-data/
+firebase-debug.log

@@ -19,6 +19,18 @@ No Docker is required (see `docs/decisions/0002-no-docker-neon-dev-branch.md`).
 Flow: `feature/*` -> PR into `dev` (CI must pass) -> PR `dev` into `main` (release).
 Recommended GitHub settings: protect `main` and `dev` (require a pull request and passing CI; no direct pushes).
 
+## Local development (current phase)
+Prerequisites: PostgreSQL (role/databases from `infra/local/create_local_db.sql`), Node 22, Java 11+, uv.
+
+| Terminal | Command (from `nexora_main`) |
+|---|---|
+| 1. Auth emulator | `powershell -ExecutionPolicy Bypass -File infra/local/start-auth-emulator.ps1` (UI: http://127.0.0.1:4000) |
+| 2. Backend | `cd backend; .venv/Scripts/python -m alembic upgrade head; .venv/Scripts/python -m uvicorn app.main:app --reload` |
+| 3. Frontend | `cd frontend; npm run dev` -> http://localhost:5173 |
+
+First super admin: sign up in the app, then `cd backend; .venv/Scripts/python -m app.cli make-super-admin you@example.com`.
+Emulator accounts persist in `.emulator-data/` (git-ignored). If you delete it, sign-ins get new Firebase ids and existing emails return `409 EMAIL_CONFLICT`. Reset the local database too (`alembic downgrade base; alembic upgrade head`).
+
 ## 1. Neon
 1. Create a project (Postgres 16+) and a database named `nexora`.
 2. Create a `dev` branch for local development.
