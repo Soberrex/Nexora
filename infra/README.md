@@ -29,7 +29,7 @@ Prerequisites: PostgreSQL (role/databases from `infra/local/create_local_db.sql`
 | 3. Frontend | `cd frontend; npm run dev` -> http://localhost:5173 |
 
 First super admin: sign up in the app, then `cd backend; .venv/Scripts/python -m app.cli make-super-admin you@example.com`.
-Emulator accounts persist in `.emulator-data/` (git-ignored). If you delete it, sign-ins get new Firebase ids and existing emails return `409 EMAIL_CONFLICT`. Reset the local database too (`alembic downgrade base; alembic upgrade head`).
+Emulator accounts persist in `.emulator-data/` (git-ignored). If you delete it, sign-ins get new Firebase ids and existing emails return `409 EMAIL_CONFLICT`. Reset the local database too (`cd backend; .venv/Scripts/python -m alembic downgrade base; .venv/Scripts/python -m alembic upgrade head`).
 
 ## 1. Neon
 1. Create a project (Postgres 16+) and a database named `nexora`.

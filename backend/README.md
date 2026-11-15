@@ -27,7 +27,7 @@ cp ../.env.example .env      # then adjust DATABASE_URL
 .venv/Scripts/python -m alembic upgrade head   # needs a reachable database
 ```
 
-## Endpoints (M0)
+## Endpoints
 - `GET /api/v1/health`: liveness, no DB access
 - `GET /api/v1/health/db`: readiness, returns 503 when the database is unreachable
 - `GET /api/v1/me`: current user (provisioned on first sign-in)
