@@ -2,6 +2,7 @@ import { type RouteObject, useRoutes } from 'react-router-dom'
 
 import { AppShell } from '@/components/layout/AppShell'
 import { RequireAuth } from '@/features/auth'
+import { OrganizationProvider } from '@/features/organizations'
 import { ComingSoonPage } from '@/pages/ComingSoonPage'
 import { NotFoundPage } from '@/pages/NotFoundPage'
 import { OverviewPage } from '@/pages/OverviewPage'
@@ -13,7 +14,9 @@ export const routes: RouteObject[] = [
     path: '/',
     element: (
       <RequireAuth>
-        <AppShell />
+        <OrganizationProvider>
+          <AppShell />
+        </OrganizationProvider>
       </RequireAuth>
     ),
     children: [

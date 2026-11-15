@@ -1,8 +1,10 @@
-import { Menu, Settings, X } from 'lucide-react'
+import { LogOut, Menu, Settings, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
 
 import { primaryNav } from '@/components/layout/navigation'
+import { useAuth } from '@/features/auth'
+import { OrganizationSwitcher } from '@/features/organizations'
 import { cn } from '@/lib/cn'
 
 function navClass({ isActive }: { isActive: boolean }) {
@@ -38,6 +40,7 @@ function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
 export function AppShell() {
   const [drawerOpen, setDrawerOpen] = useState(false)
   const location = useLocation()
+  const { user, signOut } = useAuth()
 
   useEffect(() => setDrawerOpen(false), [location.pathname])
 
@@ -72,7 +75,14 @@ export function AppShell() {
         >
           {drawerOpen ? <X size={20} /> : <Menu size={20} />}
         </button>
-        <span className="font-medium text-text-muted">Nexora workspace</span>
+        <OrganizationSwitcher />
+        <div className="ml-auto flex items-center gap-md">
+          <span className="hidden text-text-muted sm:inline">{user?.email}</span>
+          <button type="button" onClick={() => void signOut()} aria-label="Sign out"
+            className="rounded-sm p-xs text-text-muted hover:text-text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary">
+            <LogOut size={18} aria-hidden="true" />
+          </button>
+        </div>
       </header>
 
       <main className="mx-auto max-w-content p-[28px]">
