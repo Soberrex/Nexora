@@ -59,7 +59,11 @@ async def client(session_factory: async_sessionmaker[AsyncSession]) -> AsyncIter
         async with session_factory() as session, session.begin():
             yield session
 
+    from app.core.auth import get_token_verifier
+    from tests.fakes import FakeTokenVerifier
+
     app.dependency_overrides[get_db_session] = _session
+    app.dependency_overrides[get_token_verifier] = lambda: FakeTokenVerifier()
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://testserver") as c:
         yield c
     app.dependency_overrides.clear()
