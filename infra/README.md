@@ -5,7 +5,7 @@ No Docker is required (see `docs/decisions/0002-no-docker-neon-dev-branch.md`).
 | Piece | Where | Config |
 |---|---|---|
 | Database | Neon (branches: `main` = production, `dev` = local development) | Neon console |
-| Backend | Render Free web service, native Python | `render.yaml` (repo root = `Nexora main/`) |
+| Backend | Render Free web service, native Python | `render.yaml` (repo root = `nexora_main/`) |
 | Frontend | Cloudflare Pages, built from source | Pages dashboard (settings below) |
 | CI | GitHub Actions | `.github/workflows/ci.yml` |
 
