@@ -1,6 +1,8 @@
-import { screen, waitFor } from '@testing-library/react'
+import { QueryClient } from '@tanstack/react-query'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
+import { apiFetch, setApiOrganizationId } from '@/api/client'
 import { mockApi, renderRoute } from '@/test/render'
 
 const ORGS = [
@@ -10,6 +12,12 @@ const ORGS = [
 
 describe('organization context', () => {
   beforeEach(() => localStorage.clear())
+  afterEach(() => setApiOrganizationId(null))
+
+  function lastOrgHeader(fetchMock: ReturnType<typeof mockApi>) {
+    const init = (fetchMock.mock.calls.at(-1) as unknown as [unknown, RequestInit])[1]
+    return (init.headers as Headers).get('X-Organization-ID')
+  }
 
   it('selects the first organization and sends it to the API', async () => {
     const fetchMock = mockApi({
@@ -20,11 +28,32 @@ describe('organization context', () => {
     const select = await screen.findByLabelText('Organization')
     expect(select).toHaveValue('org-a')
     expect(screen.getByText('technician')).toBeInTheDocument()
+    await apiFetch('/teams').catch(() => undefined)
+    expect(lastOrgHeader(fetchMock)).toBe('org-a')
 
     await userEvent.selectOptions(select, 'org-b')
     expect(localStorage.getItem('nexora.activeOrganizationId')).toBe('org-b')
     expect(screen.getByText('org admin')).toBeInTheDocument()
-    await waitFor(() => expect(fetchMock).toHaveBeenCalled())
+    await apiFetch('/teams').catch(() => undefined)
+    expect(lastOrgHeader(fetchMock)).toBe('org-b')
+  })
+
+  it('evicts tenant queries but keeps identity queries when switching', async () => {
+    mockApi({
+      '/api/v1/health': { body: { status: 'ok', version: '0.1.0' } },
+      '/api/v1/me/organizations': { body: { data: ORGS } },
+    })
+    // Observer-less seeded data would be garbage-collected immediately with the default gcTime of 0.
+    const client = new QueryClient({ defaultOptions: { queries: { retry: false, gcTime: Infinity } } })
+    client.setQueryData(['teams', 'list'], { data: [] })
+    renderRoute('/', { queryClient: client })
+    const select = await screen.findByLabelText('Organization')
+    expect(client.getQueryData(['me', 'organizations'])).toBeDefined()
+    expect(client.getQueryData(['teams', 'list'])).toBeDefined()
+
+    await userEvent.selectOptions(select, 'org-b')
+    expect(client.getQueryData(['teams', 'list'])).toBeUndefined()
+    expect(client.getQueryData(['me', 'organizations'])).toBeDefined()
   })
 
   it('restores the saved organization when it is still valid', async () => {

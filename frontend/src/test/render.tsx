@@ -17,10 +17,10 @@ export function renderWithQuery(ui: ReactElement) {
 
 export const SIGNED_IN_USER = { uid: 'uid-tech', email: 'tech@a.io' }
 
-export function renderRoute(path: string, { adapter }: { adapter?: AuthAdapter } = {}) {
+export function renderRoute(path: string, { adapter, queryClient }: { adapter?: AuthAdapter; queryClient?: QueryClient } = {}) {
   const auth = adapter ?? createFakeAuthAdapter(SIGNED_IN_USER)
   return render(
-    <QueryClientProvider client={testQueryClient()}>
+    <QueryClientProvider client={queryClient ?? testQueryClient()}>
       <AuthProvider adapter={auth}>
         <MemoryRouter initialEntries={[path]} future={routerFuture}>
           <AppRoutes />
