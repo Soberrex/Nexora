@@ -1,16 +1,19 @@
 import { screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
-import { mockFetchJson, renderRoute } from '@/test/render'
+import { mockApi, renderRoute } from '@/test/render'
 
 describe('AppShell', () => {
   beforeEach(() => {
-    mockFetchJson(200, { status: 'ok', version: '0.1.0' })
+    mockApi({
+      '/api/v1/health': { body: { status: 'ok', version: '0.1.0' } },
+      '/api/v1/me/organizations': { body: { data: [{ id: 'org-1', name: 'Org A', role: 'technician' }] } },
+    })
   })
 
-  it('renders the primary navigation with Overview active', () => {
+  it('renders the primary navigation with Overview active', async () => {
     renderRoute('/')
-    const nav = screen.getAllByRole('navigation', { name: 'Primary' })[0]!
+    const nav = (await screen.findAllByRole('navigation', { name: 'Primary' }))[0]!
     for (const label of ['Overview', 'Incidents', 'My Work', 'Teams', 'Workflows', 'Knowledge Base', 'AI Assistant', 'Reports']) {
       expect(within(nav).getByRole('link', { name: label })).toBeInTheDocument()
     }
@@ -19,7 +22,7 @@ describe('AppShell', () => {
 
   it('navigates to a planned module and shows its milestone', async () => {
     renderRoute('/')
-    const nav = screen.getAllByRole('navigation', { name: 'Primary' })[0]!
+    const nav = (await screen.findAllByRole('navigation', { name: 'Primary' }))[0]!
     await userEvent.click(within(nav).getByRole('link', { name: 'Incidents' }))
     expect(screen.getByRole('heading', { level: 1, name: 'Incidents' })).toBeInTheDocument()
     expect(screen.getByText(/milestone M2/)).toBeInTheDocument()
@@ -27,14 +30,14 @@ describe('AppShell', () => {
 
   it('opens and closes the mobile navigation drawer', async () => {
     renderRoute('/')
-    await userEvent.click(screen.getByRole('button', { name: 'Open navigation' }))
+    await userEvent.click(await screen.findByRole('button', { name: 'Open navigation' }))
     expect(screen.getByRole('dialog', { name: 'Navigation' })).toBeInTheDocument()
     await userEvent.keyboard('{Escape}')
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
   })
 
-  it('shows a not-found page for unknown routes', () => {
+  it('shows a not-found page for unknown routes', async () => {
     renderRoute('/does-not-exist')
-    expect(screen.getByRole('heading', { name: 'Page not found' })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: 'Page not found' })).toBeInTheDocument()
   })
 })
