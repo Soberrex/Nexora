@@ -1,8 +1,8 @@
 import uuid
 from datetime import datetime
-from typing import Literal
+from typing import Annotated, Literal
 
-from pydantic import BaseModel, ConfigDict, EmailStr, Field
+from pydantic import BaseModel, ConfigDict, EmailStr, StringConstraints
 
 OrgRoleField = Literal["org_admin", "admin", "technician", "requester"]
 
@@ -29,7 +29,7 @@ class MyOrganizationsResponse(BaseModel):
 
 
 class OrganizationCreate(BaseModel):
-    name: str = Field(min_length=1, max_length=200)
+    name: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=200)]
 
 
 class OrganizationResponse(_Out):
@@ -51,7 +51,7 @@ class MembershipResponse(_Out):
 
 
 class TeamCreate(BaseModel):
-    name: str = Field(min_length=1, max_length=120)
+    name: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=120)]
 
 
 class TeamResponse(BaseModel):

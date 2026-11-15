@@ -99,3 +99,9 @@ async def test_org_header_rules(client, world) -> None:
     assert (other.status_code, other.json()["code"]) == (403, "NOT_A_MEMBER")
     assert (unknown.status_code, unknown.json()["code"]) == (403, "NOT_A_MEMBER")
     assert ok.json() == {"id": str(world["org_a"].id), "name": "Org A", "role": "technician"}
+
+
+async def test_blank_organization_name_is_422(client, world) -> None:
+    response = await client.post("/api/v1/organizations", json={"name": "   "},
+                                 headers=auth_headers(world["root"]))
+    assert response.status_code == 422

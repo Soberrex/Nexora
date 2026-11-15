@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/Button'
 import { authErrorMessage, useAuth } from '@/features/auth'
 
 function safeNext(next: string | null): string {
-  return next && next.startsWith('/') && !next.startsWith('//') ? next : '/'
+  return next && next.startsWith('/') && !next.slice(0, 2).includes('\\') && !next.startsWith('//') ? next : '/'
 }
 
 export function SignInPage() {

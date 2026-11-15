@@ -1,4 +1,5 @@
 from functools import lru_cache
+from typing import Any, Literal
 
 from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -10,7 +11,7 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
     APP_VERSION: str = "0.1.0"
-    ENVIRONMENT: str = "development"
+    ENVIRONMENT: Literal["development", "test", "staging", "production"] = "development"
     LOG_LEVEL: str = "INFO"
 
     # Neon URLs can be pasted as-is; see app/core/db_url.py.
@@ -35,6 +36,14 @@ class Settings(BaseSettings):
     FIREBASE_AUTH_EMULATOR_HOST: str = ""
     # Reject tokens whose email is not verified. Disable only for local emulator use.
     AUTH_REQUIRE_VERIFIED_EMAIL: bool = True
+
+    @field_validator("ENVIRONMENT", mode="before")
+    @classmethod
+    def _normalize_environment(cls, value: Any) -> Any:
+        if isinstance(value, str):
+            value = value.strip().lower()
+            return {"prod": "production", "dev": "development"}.get(value, value)
+        return value
 
     @field_validator("LOG_LEVEL")
     @classmethod

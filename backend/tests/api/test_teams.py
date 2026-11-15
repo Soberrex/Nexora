@@ -84,3 +84,9 @@ async def test_pagination(client, world) -> None:
     page2 = (await client.get(f"/api/v1/teams?limit=2&after={page1['next_cursor']}", headers=h)).json()
     assert len(page1["data"]) == 2 and page2["next_cursor"] is None
     assert {t["name"] for t in page1["data"] + page2["data"]} == {"t1", "t2", "t3"}
+
+
+async def test_blank_team_name_is_422(client, world) -> None:
+    h = auth_headers(world["admin"], world["org_a"])
+    response = await client.post("/api/v1/teams", json={"name": "  "}, headers=h)
+    assert response.status_code == 422

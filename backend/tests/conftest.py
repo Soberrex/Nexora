@@ -31,6 +31,8 @@ TRUNCATE_TABLES: list[str] = [
 @pytest.fixture(scope="session")
 def migrated_db() -> str:
     if not TEST_DATABASE_URL:
+        if os.environ.get("CI"):
+            pytest.fail("TEST_DATABASE_URL must be set in CI")
         pytest.skip("TEST_DATABASE_URL is not set")
     env = {**os.environ, "DATABASE_URL": TEST_DATABASE_URL, "MIGRATION_DATABASE_URL": ""}
     subprocess.run([sys.executable, "-m", "alembic", "upgrade", "head"], cwd=BACKEND_DIR, env=env, check=True)

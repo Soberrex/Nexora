@@ -40,4 +40,10 @@ describe('SignInPage', () => {
     expect(await screen.findByRole('heading', { level: 1, name: 'Overview' })).toBeInTheDocument()
     expect(adapter.current()?.email).toBe('new@a.io')
   })
+
+  it('ignores a backslash open-redirect target after sign-in', async () => {
+    const adapter = createFakeAuthAdapter({ uid: 'u1', email: 'tech@a.io' })
+    renderRoute('/sign-in?next=%2F%5Cevil.com', { adapter })
+    expect(await screen.findByRole('heading', { level: 1, name: 'Overview' })).toBeInTheDocument()
+  })
 })
