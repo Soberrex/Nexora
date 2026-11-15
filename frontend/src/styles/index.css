@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-primary: #315efb;
+  --color-text-primary: #17202f;
+  --color-text-muted: #667085;
+  --color-surface: #ffffff;
+  --color-bg: #f7f8fa;
+  --color-border: #e6e9ef;
+  --color-sidebar: #111a2e;
+  --color-sidebar-text: #c3cad9;
+  --color-sidebar-active: rgba(49, 94, 251, 0.18);
+}
+
+@layer base {
+  html {
+    font-size: 14px;
+  }
+  body {
+    @apply bg-bg font-sans text-base text-text-primary antialiased;
+  }
+  h1 {
+    @apply text-[26px] font-semibold leading-tight;
+  }
+}
