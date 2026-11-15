@@ -1,0 +1,31 @@
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: nexora-db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-nexora}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-nexora}
+      POSTGRES_DB: ${POSTGRES_DB:-nexora}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-nexora} -d ${POSTGRES_DB:-nexora}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 5s
+    restart: unless-stopped
+    networks:
+      - nexora
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  nexora:
+    driver: bridge
+    name: nexora-network
