@@ -19,7 +19,13 @@ BACKEND_DIR = Path(__file__).resolve().parents[1]
 TEST_DATABASE_URL = os.environ.get("TEST_DATABASE_URL") or settings.TEST_DATABASE_URL
 
 # Tables emptied before each DB test, children first.
-TRUNCATE_TABLES: list[str] = []
+TRUNCATE_TABLES: list[str] = [
+    "team_memberships",
+    "teams",
+    "organization_memberships",
+    "organizations",
+    "users",
+]
 
 
 @pytest.fixture(scope="session")
