@@ -26,6 +26,10 @@ async_session_factory = async_sessionmaker(bind=engine, expire_on_commit=False, 
 
 
 async def get_db_session() -> AsyncIterator[AsyncSession]:
-    """FastAPI dependency that yields a database session."""
-    async with async_session_factory() as session:
+    """One transaction per request: commits on success, rolls back on any exception.
+
+    Tenant settings (set_config(..., true)) are transaction-local, so they never leak
+    between requests that reuse a pooled connection.
+    """
+    async with async_session_factory() as session, session.begin():
         yield session

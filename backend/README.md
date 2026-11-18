@@ -27,6 +27,18 @@ cp ../.env.example .env      # then adjust DATABASE_URL
 .venv/Scripts/python -m alembic upgrade head   # needs a reachable database
 ```
 
-## Endpoints (M0)
+## Endpoints
 - `GET /api/v1/health`: liveness, no DB access
 - `GET /api/v1/health/db`: readiness, returns 503 when the database is unreachable
+- `GET /api/v1/me`: current user (provisioned on first sign-in)
+- `GET /api/v1/me/organizations`: organizations the user belongs to, with role
+- `GET /api/v1/me/active-organization`: resolved active organization (`X-Organization-ID`)
+- `POST /api/v1/organizations`: create an organization (super admin)
+- `POST /api/v1/organizations/{id}/memberships`: add a member by email and role
+- `GET|POST /api/v1/teams`: list / create teams in the active organization
+- `POST /api/v1/teams/{id}/members`: add a member to a team
+
+## CLI
+```bash
+.venv/Scripts/python -m app.cli make-super-admin you@example.com
+```

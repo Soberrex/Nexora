@@ -1,15 +1,14 @@
-import { BrowserRouter, useRoutes } from 'react-router-dom'
+import { BrowserRouter } from 'react-router-dom'
 
 import { AppProviders } from '@/app/providers'
-import { routerFuture, routes } from '@/app/routes'
+import { AppRoutes, routerFuture } from '@/app/routes'
+import { createFirebaseAuthAdapter } from '@/features/auth/firebaseAdapter'
 
-export function AppRoutes() {
-  return useRoutes(routes)
-}
+const authAdapter = createFirebaseAuthAdapter()
 
 export function App() {
   return (
-    <AppProviders>
+    <AppProviders adapter={authAdapter}>
       <BrowserRouter future={routerFuture}>
         <AppRoutes />
       </BrowserRouter>
